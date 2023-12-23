@@ -1,0 +1,81 @@
+<html>
+<head>
+    <title>엔터키 카운터</title>
+    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+</head>
+<body>
+    <div id="count-text">현재 <span id="count-number" hx-sse="connect:/count swap:message">???</span>트 진행 중</div>
+    <div id="timer-text">걸린 시간 <span id="timer-number">00:00:00</span></div>
+    <button id="timer-button">시작</button>
+    <hr>
+    <div>
+        <h1>사용법</h1>
+        <ul>
+            <li>Enter 키: 리트 횟수 증가</li>
+            <li>Delete 키: 리트 횟수 감소 (수동 조정용)</li>
+            <li>Home 키: 리트 횟수 초기화 (치트키)</li>
+        </ul>
+    </div>
+    <script>
+        const stopwatch = document.querySelector("#timer-number")
+        const button = document.querySelector("#timer-button")
+
+        let timer = 0
+        let sec = 0
+        let min = 0
+        let hour = 0
+        let timerInterval = null
+        let paused = true
+
+        function start() {
+            timerInterval = setInterval(() => {
+                timer += 1
+                hour = Math.floor(timer / 3600)
+                min = Math.floor(timer / 60) % 60
+                sec = timer % 60
+                stopwatch.innerHTML = `${hour.toString().padStart(2, "0")}:${min.toString().padStart(2, "0")}:${sec.toString().padStart(2, "0")}`
+            }, 1000);
+        }
+
+        function stop() {
+            clearInterval(timerInterval)
+        }
+
+        button.addEventListener('click', () => {
+            if (paused) {
+                paused = false
+                start()
+                button.innerHTML = "일시정지"
+            } else {
+                paused = true
+                stop()
+                button.innerHTML = "재개"
+            }
+        });
+    </script>
+    <style>
+        @font-face {
+            font-family: 'WarhavenB';
+            src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2312-1@1.1/WarhavenB.woff2') format('woff2');
+            font-weight: 700;
+            font-style: normal;
+        }
+
+        #count-text, #timer-text { 
+            padding-inline: 32px;
+            font: 32pt 'WarhavenB', sans-serif;
+            background-color: rgba(128, 128, 128, 0.5);
+            color: white;
+            text-shadow: 0px 0px 8px black, 0px 0px 16px black;
+        }
+
+        #count-number, #timer-number {
+            font: 48pt 'WarhavenB', sans-serif;
+            color: yellow;
+        }
+
+        #count-text { padding-top: 32px; }
+        #timer-text { padding-bottom: 32px; }
+    </style>
+</body>
+</html>
